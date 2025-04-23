@@ -1,83 +1,72 @@
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+-- Création de l'interface graphique
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- UI de base (popup)
-local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "DataSpy"
+-- Créer une fenêtre pour l'UI
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Parent = screenGui
 
-local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 250, 0, 250)
-Frame.Position = UDim2.new(0.5, -125, 0.5, -125)
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Frame.BorderSizePixel = 0
+-- Bouton pour copier le niveau
+local copyLevelButton = Instance.new("TextButton")
+copyLevelButton.Size = UDim2.new(0, 200, 0, 50)
+copyLevelButton.Position = UDim2.new(0.5, -100, 0.2, 0)
+copyLevelButton.Text = "Copy Level"
+copyLevelButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+copyLevelButton.Parent = frame
 
-local Title = Instance.new("TextLabel", Frame)
-Title.Size = UDim2.new(1, 0, 0, 30)
-Title.BackgroundTransparency = 1
-Title.Text = "🧳 Data Spy"
-Title.Font = Enum.Font.Code
-Title.TextColor3 = Color3.new(1, 1, 1)
-Title.TextSize = 18
+-- Bouton pour copier les Beli
+local copyBeliButton = Instance.new("TextButton")
+copyBeliButton.Size = UDim2.new(0, 200, 0, 50)
+copyBeliButton.Position = UDim2.new(0.5, -100, 0.6, 0)
+copyBeliButton.Text = "Copy Beli"
+copyBeliButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+copyBeliButton.Parent = frame
 
-local InfoLabel = Instance.new("TextLabel", Frame)
-InfoLabel.Position = UDim2.new(0, 0, 0, 35)
-InfoLabel.Size = UDim2.new(1, 0, 1, -35)
-InfoLabel.Text = ""
-InfoLabel.TextColor3 = Color3.new(1, 1, 1)
-InfoLabel.BackgroundTransparency = 1
-InfoLabel.Font = Enum.Font.Code
-InfoLabel.TextSize = 14
-InfoLabel.TextWrapped = true
-InfoLabel.TextYAlignment = Enum.TextYAlignment.Top
-
-local CloneButton = Instance.new("TextButton", Frame)
-CloneButton.Size = UDim2.new(1, 0, 0, 30)
-CloneButton.Position = UDim2.new(0, 0, 1, -60)
-CloneButton.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-CloneButton.Text = "Cloner le Backpack"
-CloneButton.TextColor3 = Color3.new(1, 1, 1)
-CloneButton.Font = Enum.Font.Code
-CloneButton.TextSize = 16
-
-local CloseButton = Instance.new("TextButton", Frame)
-CloseButton.Size = UDim2.new(0.5, 0, 0, 30)
-CloseButton.Position = UDim2.new(0, 0, 1, -30)
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
-CloseButton.Text = "Fermer"
-CloseButton.TextColor3 = Color3.new(1, 1, 1)
-CloseButton.Font = Enum.Font.Code
-CloseButton.TextSize = 16
-
--- Fonction pour cloner le backpack d'un joueur dans le vôtre
-local function CloneBackpack(playerName)
-    local targetPlayer = Players:FindFirstChild(playerName)
-    if not targetPlayer then
-        InfoLabel.Text = "Joueur introuvable 😭"
-        return
+-- Fonction pour copier le niveau du joueur
+copyLevelButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local level = player:FindFirstChild("Data") and player.Data:FindFirstChild("Level")
+    
+    if level then
+        local copiedLevel = level.Value
+        print("Niveau copié : " .. copiedLevel)
+        
+        -- Appliquer le niveau à ton propre joueur ou à un autre joueur si nécessaire
+        player.Data.Level.Value = copiedLevel
+        print("Niveau appliqué : " .. player.Data.Level.Value)
+    else
+        warn("Le joueur n'a pas de niveau valide.")
     end
-
-    local targetBackpack = targetPlayer:FindFirstChild("Backpack")
-    if not targetBackpack then
-        InfoLabel.Text = "Pas de backpack visible 🪫"
-        return
-    end
-
-    -- Cloner les objets et les ajouter dans le backpack du joueur local
-    for _, item in pairs(targetBackpack:GetChildren()) do
-        local clonedItem = item:Clone() -- Clonage de l'item
-        clonedItem.Parent = LocalPlayer.Backpack -- Ajouter l'item cloné à notre propre backpack
-    end
-
-    InfoLabel.Text = "Items clonés dans ton backpack! 🎉"
-end
-
--- Action quand le bouton "Cloner le Backpack" est cliqué
-CloneButton.MouseButton1Click:Connect(function()
-    local playerName = "Hichemsabri93"  -- Remplacez par le nom du joueur dont vous voulez cloner le backpack
-    CloneBackpack(playerName)
 end)
 
--- Action quand le bouton "Fermer" est cliqué
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+-- Fonction pour copier les Beli du joueur
+copyBeliButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local beli = player:FindFirstChild("Data") and player.Data:FindFirstChild("Beli")
+    
+    if beli then
+        local copiedBeli = beli.Value
+        print("Beli copié : " .. copiedBeli)
+        
+        -- Appliquer les Beli à ton propre joueur ou à un autre joueur si nécessaire
+        player.Data.Beli.Value = copiedBeli
+        print("Beli appliqué : " .. player.Data.Beli.Value)
+    else
+        warn("Le joueur n'a pas de Beli valide.")
+    end
+end)
+
+-- Fonction pour supprimer l'interface (si nécessaire)
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 100, 0, 50)
+closeButton.Position = UDim2.new(0.5, -50, 0.9, 0)
+closeButton.Text = "Close"
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.Parent = frame
+
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()  -- Ferme l'interface si besoin
 end)
